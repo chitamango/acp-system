@@ -1,0 +1,136 @@
+package com.orderprocess.test
+ 
+import com.acp.controllers.AcpProcessController;
+import com.acp.instance.ArtifactInstance;
+import com.acp.instance.AttributeInstance;
+import com.acp.instance.ProcessInstance;
+import com.acp.instance.RuleInstance;
+import com.acp.instance.ServiceInstance;
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList; 
+import com.acp.factory.AcpFactory;
+import org.apache.axiom.om.OMElement;
+import javax.xml.namespace.QName;
+import com.acp.events.MessageEvent;
+import com.acp.events.CombineEvent;
+import com.acp.events.ArtifactChangeEvent;
+
+global com.acp.controllers.AcpProcessController pc;
+
+ 
+rule "r01-createOrder"
+   
+    dialect "java"
+    when
+	
+
+	
+	$message: MessageEvent()
+	$name: MessageEvent(getValueFromPart("cust_name") != null)
+	$address: MessageEvent(getValueFromPart("cust_address")!= null)
+//	$name: String(this != null) from $message.getValueFromPart("cust_name");
+//	$address: String(this != null) from $message.getValueFromPart("cust_address");
+		
+	
+    then
+	
+        
+	
+		ArrayList ListOfArtifact = new ArrayList<String>();
+		ListOfArtifact.add("order");
+		
+		AcpFactory factory = new AcpFactory();		
+		RuleInstance ruleInstance = factory.getRuleInstance("order_process","r01-createOrder");
+		pc.startProcess(ListOfArtifact, "createOrderService","createOrder", ruleInstance,"order_process", $message.getMessage());
+	
+	
+	
+	
+	
+		
+end
+
+rule "r02-addOrderItem"
+    
+  
+    dialect "java"
+    when
+	
+	
+	$message: CombineEvent()
+	$item: CombineEvent(getValueFromPart("item")!= null);
+	$quantity: CombineEvent(getValueFromPart("quantity")!= null);
+	
+    then
+	
+        
+		
+		ArrayList ListOfArtifact = new ArrayList<String>();
+		
+		
+		AcpFactory factory = new AcpFactory();		
+		RuleInstance ruleInstance = factory.getRuleInstance("order_process","r02-addOrderItem");
+		pc.runProcess(ListOfArtifact,$message.getMessage() ,"GrandTotalService","calculateGrandTotal", ruleInstance,$message.getProcessId());
+		
+
+	
+		
+end
+
+rule "r03-submitOrderItem"
+    
+  
+    dialect "java"
+    when
+	
+	
+	$message: CombineEvent()
+	$item: CombineEvent(getValueFromPart("orderId")!= null);
+	$quantity: CombineEvent(getValueFromPart("amountpaid")!= null);
+	$invoice_state: CombineEvent(getArtifactState("order")== "ready_for_payment")
+	
+    then
+	
+        
+		
+		ArrayList ListOfArtifact = new ArrayList<String>();
+		
+		
+		AcpFactory factory = new AcpFactory();		
+		RuleInstance ruleInstance = factory.getRuleInstance("order_process","r03-submitOrderItem");
+		pc.runProcess(ListOfArtifact,$message.getMessage() ,"ManufacturingService","submitOrderItem", ruleInstance,$message.getProcessId());
+		
+
+	
+		
+end
+
+rule "r04-confirmOrderItem"
+    
+  
+    dialect "java"
+    when
+	
+	
+	$artifact: ArtifactChangeEvent()
+	$credit_status: ArtifactChangeEvent(getArtifactData("order", "order_item_submit_date") != null)
+	$invoice_state: ArtifactChangeEvent(getArtifactState("order")== "processing_order_item")
+	
+    then
+	
+        
+		
+		ArrayList ListOfArtifact = new ArrayList<String>();
+		
+		
+		AcpFactory factory = new AcpFactory();		
+		RuleInstance ruleInstance = factory.getRuleInstance("order_process","r04-confirmOrderItem");
+		pc.runProcess(ListOfArtifact,null ,"ManufacturingService","confirmOrderItem", ruleInstance,$artifact.getProcessId());
+		
+
+	
+		
+end
+
+
+

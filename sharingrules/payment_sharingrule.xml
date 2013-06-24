@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<client_sharing_rule xmlns="http://www.swin.edu.au" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" process_type = "payment_process">
+      <rule no = "1">
+          <when>
+               <artifact_changed>
+                    <name>invoice</name>
+                    <state>unpaid</state>
+               </artifact_changed>
+          </when>
+          <share>
+               <artifact>
+                    <name>invoice</name>
+                    <attributes>
+                         <attribute>invoiceId</attribute>
+                         <attribute>customerName</attribute>
+                         <attribute>grand_total</attribute>
+                    </attributes>
+              
+               </artifact>
+          </share>
+     </rule> 
+     <rule no = "2">
+          <when>
+               <artifact_changed>
+                    <name>invoice</name>
+                    <state>paid</state>
+               </artifact_changed>
+          </when>
+          <share>
+               <artifact>
+                    <name>invoice</name>
+                    <attributes>
+                         <attribute>amount_paid</attribute>
+                        <attribute>paid_date</attribute>
+                    </attributes>
+              
+               </artifact>
+          </share>
+     </rule> 
+     
+</client_sharing_rule>

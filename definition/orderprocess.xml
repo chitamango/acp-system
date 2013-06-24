@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?><process xmlns="http://www.swin.edu.au" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="order_process" xsi:schemaLocation="http://www.swin.edu.au ACPdefintion.xsd">
+	<services>
+		<service inputMessage="createOrderRequest" location="http://localhost:8080/axis2/services/createOrderService?wsdl" name="createOrderService" namespace="http://creatOrder.test" operation="createOrder" outputMessage="createOrderResponse" port="createOrderServiceHttpSoap11Endpoint" />
+		<service inputMessage="calculateGrandTotalRequest" location="http://localhost:8080/axis2/services/GrandTotalService?wsdl" name="GrandTotalService" namespace="http://GrandTotal.test" operation="calculateGrandTotal" outputMessage="calculateGrandTotalResponse" port="GrandTotalServiceHttpSoap11Endpoint"/> <!-- //input message here should be message type of wsdl -->
+		<service inputMessage="submitOrderItemRequest" location="http://localhost:8080/axis2/services/ManufacturingService?wsdl" name="ManufacturingService" namespace="http://manufactoringService.test" operation="submitOrderItem" outputMessage="submitOrderItemResponse" port="ManufacturingServiceHttpSoap11Endpoint" />
+		<service inputMessage="confirmOrderItemRequest" location="http://localhost:8080/axis2/services/ManufacturingService?wsdl" name="ManufacturingService" namespace="http://manufactoringService.test" operation="confirmOrderItem" outputMessage="confirmOrderItemResponse" port="ManufacturingServiceHttpSoap11Endpoint" />
+	</services>
+	<artifacts>
+		<artifact name="order">
+			<attributes>
+				<attribute name="orderId" structure="pair" type="string" unique_id = "yes" /> <!-- pair/list , String/Long../artifact -->
+				<attribute name = "orderItem" structure = "pair" type = "String" />
+				<attribute name = "quantity" structure = "pair" type = "Integer" />
+				<attribute name = "customerAddress" structure = "pair" type = "String" /> 
+				<attribute name = "customerName" structure = "pair" type = "string" /> 
+				<attribute name = "grand_total" structure = "pair" type = "double" /> 
+				<attribute name="order_item_submit_date" structure="pair" type="String" /> 
+				<attribute name="order_item_complete_date" structure="pair" type="String" /> 
+			</attributes>
+			<states>
+				<state name="start" type="init"/> <!--  init/end -->
+				<state name="open_for_item"/> 
+				<state name= "ready_for_payment"/>
+				<state name= "processing_order_item"/>
+				<state name= "order_item_completed" type="end" />
+			</states>
+		</artifact>	
+	</artifacts>
+<!-- rule have to change don't forget to change drool file -->
+	<businessRules>
+		<rule name="r01-createOrder">
+		<onEvent type="messageReceivedEvent"/>  
+			<preCon>
+				<and>
+					<atom type="state" value="init"/>
+					<atom type="state" value="init"/>
+					<atom type="state" value="init"/>
+				</and>
+			</preCon> 
+			<do> <!-- input should be list of artifact that related to the process // internl or external -->
+				<invoke operation="createOrder" service="creatOrderService" type="local"> <!--  internal/external  -->
+					<mapping>
+						<map type = "MessageToMessage"> 
+							<copy>
+								<from Message = "placeOrderRequest"  part="cust_name"/> 
+								<to message = "createOrderRequest" part = "name"/>
+							</copy>
+							<copy>
+								<from Message = "placeOrderRequest"  part="cust_address"/> 
+								<to message = "createOrderRequest" part = "address"/>
+							</copy>
+						</map>
+						<map type = "MessageToArtifact"> 
+							<copy>
+								<from message = "createOrderResponse" part = "orderid"/>
+								<to artifact = "order" attribute ="orderid"/> 							
+							</copy>
+							<copy>
+								<from message = "createOrderResponse" part = "customer_name"/>
+								<to artifact = "order" attribute ="customerName"/> 							
+							</copy>
+							<copy>
+								<from message = "createOrderResponse" part = "address"/>
+								<to artifact = "order" attribute ="customerAddress"/> 							
+							</copy>
+							
+						</map>
+						
+					</mapping>
+					<transitions>
+						<transition artifact="order" fromState="start" toState="open_for_item"/> <!-- can have more than one transition -->
+					</transitions>
+				</invoke>
+			</do>
+		</rule>	
+		<rule name="r02-addOrderItem">
+		<onEvent type="messageReceivedEvent"/>  
+			<preCon>
+				<and>
+					<atom type="state" value="init"/>
+					<atom type="state" value="init"/>
+					<atom type="state" value="init"/>
+				</and>
+			</preCon> 
+			<do>
+				<invoke operation="calculateGrandTotal" service="GrandTotalService" type="local"> <!--  internal/external  -->
+					<mapping>
+						<map type = "MessageToMessage"> 
+							<copy>
+								<from Message = "addItemRequest"  part="item"/> 
+								<to message = "calculateGrandTotalRequest" part = "Item"/>
+							</copy>
+							<copy>
+								<from Message = "addItemRequest"  part="quantity"/> 
+								<to message = "calculateGrandTotalRequest" part = "Quantity"/>
+							</copy>
+						</map>
+						<map type = "MessageToArtifact"> 
+							<copy>
+								<from message = "calculateGrandTotalResponse" part = "item"/>
+								<to artifact = "order" attribute ="orderItem"/> 							
+							</copy>
+							<copy>
+								<from message = "calculateGrandTotalResponse" part = "quantity"/>
+								<to artifact = "order" attribute ="quantity"/> 							
+							</copy>
+							<copy>
+								<from message = "calculateGrandTotalResponse" part = "grandTotal"/>
+								<to artifact = "order" attribute ="grand_total"/> 							
+							</copy>
+						</map>
+						
+					</mapping>
+					<transitions>
+						<transition artifact="order" fromState="open_for_item" toState="ready_for_payment"/> <!-- can have more than one transition -->
+					</transitions>
+				</invoke>
+			</do>
+		</rule>
+		<rule name="r03-submitOrderItem">
+		<onEvent type="messageReceivedEvent"/>  
+			<preCon>
+				<and>
+					<atom type="state" value="init"/>
+					<atom type="state" value="init"/>
+					<atom type="state" value="init"/>
+				</and>
+			</preCon> 
+			<do>
+				<invoke operation="submitOrderItem" service="ManufacturingService" type="external"> <!--  internal/external  -->
+					<mapping>
+						<map type = "MessageToMessage"> 
+							<copy>
+								<from Message = "confirmPaymentRequest"  part="orderId"/> 
+								<to message = "submitOrderItemRequest" part = "OrderId"/>
+							</copy>
+						</map>
+						<map type = "ArtifactToMessage"> 
+							<copy>
+								<from artifact = "order"  attribute ="orderItem"/> 
+								<to message = "submitOrderItemRequest" part = "OrderItem"/>
+							</copy>
+						
+						</map>
+						<map type = "MessageToArtifact"> 
+							<copy>
+								<from message = "submitOrderItemResponse" part = "submitDate"/>
+								<to artifact = "order" attribute ="order_item_submit_date"/> 							
+							</copy>
+						</map>
+						
+					</mapping>
+					<transitions>
+						<transition artifact="order" fromState="ready_for_payment" toState="processing_order_item"/> <!-- can have more than one transition -->
+					</transitions>
+				</invoke>
+			</do>
+		</rule>
+		<rule name="r04-confirmOrderItem">
+		<onEvent type="artifactChangedEvent"/>  
+			<preCon>
+				<and>
+					<atom type="state" value="init"/>
+					<atom type="state" value="init"/>
+					<atom type="state" value="init"/>
+				</and>
+			</preCon> 
+			<do>
+				<invoke operation="confirmOrderItem" service="ManufacturingService" type="external"> <!--  internal/external  -->
+					<mapping>
+						<map type = "ArtifactToMessage"> 
+							<copy>
+								<from artifact = "order"  attribute ="orderId"/> 
+								<to message = "confirmOrderItemRequest" part = "OrderId"/>
+							</copy>
+						
+						</map>
+						<map type = "MessageToArtifact"> 
+							<copy>
+								<from message = "submitOrderItemResponse" part = "completeDate"/>
+								<to artifact = "order" attribute ="order_item_complete_date"/> 							
+							</copy>
+						</map>
+						
+					</mapping>
+					<transitions>
+						<transition artifact="order" fromState="processing_order_item" toState="order_item_completed"/> <!-- can have more than one transition -->
+					</transitions>
+				</invoke>
+			</do>
+		</rule>
+		
+	</businessRules>
+</process><!-- //use wsdl as the source of data types used in variable declaration -->

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<log process_id="payment_process-P2">
+<record no="1">
+<timestamp>Oct 21, 2012 4:42:37 PM</timestamp>
+<ruleId>r01-createInvoice:R1</ruleId>
+<serviceId>InvoiceService:S1</serviceId>
+<pre_artifact>
+<invoice id="" state="start">
+<invoiceId>null</invoiceId>
+<customerName>null</customerName>
+<issue_date>null</issue_date>
+<paid_date>null</paid_date>
+<grand_total>null</grand_total>
+<credit_no>null</credit_no>
+<ccv>null</ccv>
+<credit_status>null</credit_status>
+<amount_paid>null</amount_paid>
+</invoice>
+</pre_artifact>
+<post_artifact>
+<invoice id="invoice:1111" state="unpaid">
+<invoiceId>1111</invoiceId>
+<customerName>Kan Ngamakeur</customerName>
+<issue_date>Oct 21, 2012 4:42:37 PM</issue_date>
+<paid_date>null</paid_date>
+<grand_total>1200.0</grand_total>
+<credit_no>null</credit_no>
+<ccv>null</ccv>
+<credit_status>null</credit_status>
+<amount_paid>null</amount_paid>
+</invoice>
+</post_artifact>
+</record>
+<record no="2">
+<timestamp>Oct 21, 2012 4:43:00 PM</timestamp>
+<ruleId>r02-verify_creditcard:R2</ruleId>
+<serviceId>CreditCheck:S2</serviceId>
+<pre_artifact>
+<invoice id="invoice:1111" state="unpaid">
+<invoiceId>1111</invoiceId>
+<customerName>Kan Ngamakeur</customerName>
+<issue_date>Oct 21, 2012 4:42:37 PM</issue_date>
+<paid_date>null</paid_date>
+<grand_total>1200.0</grand_total>
+<credit_no>null</credit_no>
+<ccv>null</ccv>
+<credit_status>null</credit_status>
+<amount_paid>null</amount_paid>
+</invoice>
+</pre_artifact>
+<post_artifact>
+<invoice id="invoice:1111" state="processing">
+<invoiceId>1111</invoiceId>
+<customerName>Kan Ngamakeur</customerName>
+<issue_date>Oct 21, 2012 4:42:37 PM</issue_date>
+<paid_date>null</paid_date>
+<grand_total>1200.0</grand_total>
+<credit_no>123456789</credit_no>
+<ccv>123</ccv>
+<credit_status>true</credit_status>
+<amount_paid>null</amount_paid>
+</invoice>
+</post_artifact>
+</record>
+<record no="3">
+<timestamp>Oct 21, 2012 4:43:02 PM</timestamp>
+<ruleId>r03-clearInvoice:R3</ruleId>
+<serviceId>InvoiceService:S3</serviceId>
+<pre_artifact>
+<invoice id="invoice:1111" state="processing">
+<invoiceId>1111</invoiceId>
+<customerName>Kan Ngamakeur</customerName>
+<issue_date>Oct 21, 2012 4:42:37 PM</issue_date>
+<paid_date>null</paid_date>
+<grand_total>1200.0</grand_total>
+<credit_no>123456789</credit_no>
+<ccv>123</ccv>
+<credit_status>true</credit_status>
+<amount_paid>null</amount_paid>
+</invoice>
+</pre_artifact>
+<post_artifact>
+<invoice id="invoice:1111" state="paid">
+<invoiceId>1111</invoiceId>
+<customerName>Kan Ngamakeur</customerName>
+<issue_date>Oct 21, 2012 4:42:37 PM</issue_date>
+<paid_date>Oct 21, 2012 4:43:02 PM</paid_date>
+<grand_total>1200.0</grand_total>
+<credit_no>123456789</credit_no>
+<ccv>123</ccv>
+<credit_status>true</credit_status>
+<amount_paid>1200.0</amount_paid>
+</invoice>
+</post_artifact>
+</record>
+</log>

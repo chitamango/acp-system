@@ -1,0 +1,124 @@
+package com.paymentprocess.test
+ 
+import com.acp.controllers.AcpProcessController;
+import com.acp.instance.ArtifactInstance;
+import com.acp.instance.AttributeInstance;
+import com.acp.instance.ProcessInstance;
+import com.acp.instance.RuleInstance;
+import com.acp.instance.ServiceInstance;
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList; 
+import com.acp.factory.AcpFactory;
+import org.apache.axiom.om.OMElement;
+import javax.xml.namespace.QName;
+import com.acp.events.MessageEvent;
+import com.acp.events.CombineEvent;
+import com.acp.events.ArtifactChangeEvent;
+
+global com.acp.controllers.AcpProcessController pc;
+
+ 
+rule "r01-createInvoice"
+   
+    dialect "java"
+    when
+	
+
+	
+	$message: MessageEvent()
+	$name: MessageEvent(getValueFromPart("customer_name") != null)
+	$address: MessageEvent(getValueFromPart("grand_total")!= null)
+//	$name: String(this != null) from $message.getValueFromPart("cust_name");
+//	$address: String(this != null) from $message.getValueFromPart("cust_address");
+		
+	
+    then
+	
+        
+	
+		ArrayList ListOfArtifact = new ArrayList<String>();
+		ListOfArtifact.add("invoice");
+		
+		AcpFactory factory = new AcpFactory();		
+		RuleInstance ruleInstance = factory.getRuleInstance("payment_process","r01-createInvoice");
+		pc.startProcess(ListOfArtifact, "InvoiceService","CreateInvoice", ruleInstance,"payment_process", $message.getMessage());
+	
+	
+	
+	
+	
+		
+end
+
+rule "r02-verify_creditcard"
+   
+    dialect "java"
+    when
+	
+
+	
+	$message: CombineEvent()
+	$credit_no: CombineEvent(getValueFromPart("creditcard_no") != null)
+	$ccv: CombineEvent(getValueFromPart("ccv")!= null)
+//	$name: String(this != null) from $message.getValueFromPart("cust_name");
+//	$address: String(this != null) from $message.getValueFromPart("cust_address");
+		
+	
+    then
+	
+        
+	
+		ArrayList ListOfArtifact = new ArrayList<String>();
+		//ListOfArtifact.add("invoice");
+		
+		AcpFactory factory = new AcpFactory();		
+		RuleInstance ruleInstance = factory.getRuleInstance("payment_process","r02-verify_creditcard");
+		pc.runProcess(ListOfArtifact,$message.getMessage() ,"CreditCheck","verifyCredit", ruleInstance,$message.getProcessId());
+		
+	
+	
+	
+	
+	
+		
+end
+
+
+
+rule "r03-clearInvoice"
+   
+    dialect "java"
+    when
+	
+
+	
+	$artifact: ArtifactChangeEvent()
+	$credit_status: ArtifactChangeEvent(getArtifactData("invoice", "credit_status") == "true")
+	$invoice_state: ArtifactChangeEvent(getArtifactState("invoice")== "processing")
+//	$name: String(this != null) from $message.getValueFromPart("cust_name");
+//	$address: String(this != null) from $message.getValueFromPart("cust_address");
+		
+	
+    then
+	
+        
+	
+		ArrayList ListOfArtifact = new ArrayList<String>();
+		//ListOfArtifact.add("invoice");
+		
+		AcpFactory factory = new AcpFactory();		
+		RuleInstance ruleInstance = factory.getRuleInstance("payment_process","r03-clearInvoice");
+		pc.runProcess(ListOfArtifact,null ,"InvoiceService","clearInvoice", ruleInstance,$artifact.getProcessId());
+		
+	
+	
+	
+	
+	
+		
+end
+
+
+
+
+

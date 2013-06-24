@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?><process xmlns="http://www.swin.edu.au" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="payment_process" xsi:schemaLocation="http://www.swin.edu.au ACPdefintion.xsd">
+	<services>
+		<service inputMessage="CreateInvoiceRequest" location="http://localhost:8080/axis2/services/InvoiceService?wsdl" name="InvoiceService" namespace="http://invoiceService.test" operation="CreateInvoice" outputMessage="CreateInvoiceResponse" port="InvoiceServiceHttpSoap11Endpoint" />
+		<service inputMessage="verifyCreditRequest" location="http://localhost:8080/axis2/services/CreditCheck?wsdl" name="CreditCheck" namespace="http://creditcheck.test" operation="verifyCredit" outputMessage="verifyCreditResponse" port="CreditCheckHttpSoap11Endpoint" />
+		<service inputMessage="clearInvoiceRequest" location="http://localhost:8080/axis2/services/InvoiceService?wsdl" name="InvoiceService" namespace="http://invoiceService.test" operation="clearInvoice" outputMessage="clearInvoiceResponse" port="InvoiceServiceHttpSoap11Endpoint" />
+	</services>
+	<artifacts>
+		<artifact name="invoice">
+			<attributes>
+				<attribute name="invoiceId" structure="pair" type="string" unique_id = "yes" /> <!-- pair/list , String/Long../artifact -->
+				<attribute name = "customerName" structure = "pair" type = "string" /> 
+				<attribute name = "issue_date" structure = "pair" type = "string" />
+				<attribute name = "paid_date" structure = "pair" type = "string" />
+				<attribute name = "grand_total" structure = "pair" type = "double" /> 
+				<attribute name = "credit_no" structure = "pair" type = "string" />
+				<attribute name = "ccv" structure = "pair" type = "string" />
+				<attribute name = "credit_status" structure = "pair" type = "string" />
+				<attribute name="amount_paid" structure="pair" type="double" /> 
+			</attributes>
+			<states>
+				<state name="start" type="init"/> <!--  init/end -->
+				<state name="unpaid"/> 
+				<state name= "processing"/>
+				<state name="paid" type="end"/>
+			</states>
+		</artifact>	
+	</artifacts>
+<!-- rule have to change don't forget to change drool file -->
+	<businessRules>
+		<rule name="r01-createInvoice">
+		<onEvent type="messageReceivedEvent"/>  
+			<preCon>
+				<and>
+					<atom type="state" value="init"/>
+					<atom type="state" value="init"/>
+					<atom type="state" value="init"/>
+				</and>
+			</preCon> 
+			<do> <!-- input should be list of artifact that related to the process // internl or external -->
+				<invoke operation="CreateInvoice" service="InvoiceService" type="External"> <!--  internal/external  -->
+					<mapping>
+						<map type = "MessageToMessage"> 
+							<copy>
+								<from Message = "makePaymentRequest"  part="customer_name"/> 
+								<to message = "CreateInvoiceRequest" part = "customername"/>
+							</copy>
+							<copy>
+								<from Message = "makePaymentRequest"  part="grand_total"/> 
+								<to message = "CreateInvoiceRequest" part = "grandTotal"/>
+							</copy>
+						</map>
+						<map type = "MessageToArtifact"> 
+							<copy>
+								<from message = "CreateInvoiceResponse" part = "invoiceId"/>
+								<to artifact = "invoice" attribute ="invoiceId"/> 							
+							</copy>
+							<copy>
+								<from message = "CreateInvoiceResponse" part = "customerName"/>
+								<to artifact = "invoice" attribute ="customerName"/> 							
+							</copy>
+							<copy>
+								<from message = "CreateInvoiceResponse" part = "grandTotal"/>
+								<to artifact = "invoice" attribute ="grand_total"/> 							
+							</copy>
+							<copy>
+								<from message = "CreateInvoiceResponse" part = "invoiceDate"/>
+								<to artifact = "invoice" attribute ="issue_date"/> 							
+							</copy>
+						</map>
+						
+					</mapping>
+					<transitions>
+						<transition artifact="invoice" fromState="start" toState="unpaid"/> <!-- can have more than one transition -->
+					</transitions>
+				</invoke>
+			</do>
+		</rule>
+		<rule name="r02-verify_creditcard">
+		<onEvent type="messageReceivedEvent"/>  
+			<preCon>
+				<and>
+					<atom type="state" value="init"/>
+					<atom type="state" value="init"/>
+					<atom type="state" value="init"/>
+				</and>
+			</preCon> 
+			<do> <!-- input should be list of artifact that related to the process // internl or external -->
+				<invoke operation="verifyCredit" service="CreditCheck" type="External"> <!--  internal/external  -->
+					<mapping>
+						<map type = "MessageToMessage"> 
+							<copy>
+								<from Message = "payViaCreditCardRequest"  part="creditcard_no"/> 
+								<to message = "verifyCreditRequest" part = "credit_no"/>
+							</copy>
+							<copy>
+								<from Message = "payViaCreditCardRequest"  part="ccv"/> 
+								<to message = "verifyCreditRequest" part = "ccv"/>
+							</copy>
+						</map>
+						<map type = "MessageToArtifact"> 
+							<copy>
+								<from message = "verifyCreditResponse" part = "credit_no"/>
+								<to artifact = "invoice" attribute ="credit_no"/> 							
+							</copy>
+							<copy>
+								<from message = "verifyCreditResponse" part = "ccv"/>
+								<to artifact = "invoice" attribute ="ccv"/> 							
+							</copy>
+							<copy>
+								<from message = "verifyCreditResponse" part = "status"/>
+								<to artifact = "invoice" attribute ="credit_status"/> 							
+							</copy>
+							
+						</map>
+						
+					</mapping>
+					<transitions>
+						<transition artifact="invoice" fromState="unpaid" toState="processing"/> <!-- can have more than one transition -->
+					</transitions>
+				</invoke>
+			</do>
+		</rule>	
+		<rule name="r03-clearInvoice">
+		<onEvent type="ArtifactChangedEvent"/>  
+			<preCon>
+				<and>
+					<atom type="state" value="init"/>
+					<atom type="state" value="init"/>
+					<atom type="state" value="init"/>
+				</and>
+			</preCon> 
+			<do> <!-- input should be list of artifact that related to the process // internl or external -->
+				<invoke operation="clearInvoice" service="InvoiceService" type="External"> <!--  internal/external  -->
+					<mapping>
+						<map type = "ArtifactToMessage"> 
+							<copy>
+								<from artifact = "invoice"  attribute ="credit_no"/> 
+								<to message = "clearInvoiceRequest" part = "credit_no"/>
+							</copy>
+							<copy>
+								<from artifact = "invoice"  attribute ="ccv"/> 
+								<to message = "clearInvoiceRequest" part = "ccv"/>
+							</copy>
+							<copy>
+								<from artifact = "invoice"  attribute ="invoiceId"/> 
+								<to message = "clearInvoiceRequest" part = "invoiceId"/>
+							</copy>
+							<copy>
+								<from artifact = "invoice"  attribute ="grand_total"/> 
+								<to message = "clearInvoiceRequest" part = "grandTotal"/>
+							</copy>
+						</map>
+						<map type = "MessageToArtifact"> 
+							<copy>
+								<from message = "clearInvoiceResponse" part = "amount_paid"/>
+								<to artifact = "invoice" attribute ="amount_paid"/> 							
+							</copy>
+							<copy>
+								<from message = "clearInvoiceResponse" part = "invoiceDate"/>
+								<to artifact = "invoice" attribute ="paid_date"/> 							
+							</copy>
+					
+						</map>
+						
+					</mapping>
+					<transitions>
+						<transition artifact="invoice" fromState="processing" toState="paid"/> <!-- can have more than one transition -->
+					</transitions>
+				</invoke>
+			</do>
+		</rule>		
+		</businessRules>
+</process><!-- //use wsdl as the source of data types used in variable declaration -->

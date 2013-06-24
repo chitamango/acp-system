@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<client_sharing_rule xmlns="http://www.swin.edu.au" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" process_type = "order_process">
+      <rule no = "1">
+          <when>
+               <artifact_changed>
+                    <name>order</name>
+                    <state>open_for_item</state>
+               </artifact_changed>
+          </when>
+          <share>
+               <artifact>
+                    <name>order</name>
+                    <attributes>
+                         <attribute>orderId</attribute>
+                         <attribute>customername</attribute>
+                    </attributes>
+              
+               </artifact>
+          </share>
+     </rule> 
+     <rule no = "2">
+          <when>
+               <artifact_changed>
+                    <name>order</name>
+                    <state>ready_for_payment</state>
+               </artifact_changed>
+          </when>
+          <share>
+               <artifact>
+                    <name>order</name>
+                    <attributes>
+                         <attribute>orderItem</attribute>
+                         <attribute>grand_total</attribute>
+                    </attributes>
+              
+               </artifact>
+          </share>
+     </rule>
+      <rule no = "3">
+          <when>
+               <artifact_changed>
+                    <name>order</name>
+                    <state>order_item_completed</state>
+               </artifact_changed>
+          </when>
+          <share>
+               <artifact>
+                    <name>order</name>
+                    <attributes>
+                         <attribute>order_item_complete_date</attribute>
+                    </attributes>
+              
+               </artifact>
+          </share>
+     </rule>
+</client_sharing_rule>

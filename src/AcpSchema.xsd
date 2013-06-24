@@ -1,0 +1,263 @@
+<?xml version = "1.0" ?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.swin.edu.au" xmlns="http://www.swin.edu.au" elementFormDefault="qualified">
+<xsd:element name="process">
+  <xsd:complexType>
+    <xsd:sequence>
+      <xsd:element name="services" type="servicesType" minOccurs = "1" maxOccurs = "1" />
+	  <xsd:element name="artifacts" type="artifactsType" minOccurs = "1" maxOccurs = "1" />
+      <xsd:element name="businessRules" type="businessRulesType" minOccurs = "1" maxOccurs = "1" />   
+    </xsd:sequence>
+	<xsd:attribute name="name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+</xsd:element>
+
+
+<xsd:complexType name="servicesType">
+  <xsd:sequence>
+    <xsd:element name="service" type="serviceType" minOccurs = "1" maxOccurs = "unbounded" />
+  </xsd:sequence>
+</xsd:complexType>
+
+<xsd:complexType name="artifactsType">
+  <xsd:sequence>
+    <xsd:element name="artifact" type="artifactType" minOccurs = "1" maxOccurs = "unbounded" />
+  </xsd:sequence>
+</xsd:complexType>
+
+<xsd:complexType name="businessRulesType">
+  <xsd:sequence>
+    <xsd:element name="rule" type="ruleType" minOccurs = "1" maxOccurs = "unbounded" />
+  </xsd:sequence>
+ <!-- <xsd:attribute name="rulefile" type="xsd:string" use="required"/> -->
+</xsd:complexType>
+
+
+
+<xsd:complexType name="serviceType"> 
+    <xsd:attribute name="name" type="xsd:string" use="required" />
+	<xsd:attribute name="inputMessage" type="xsd:string" use="required" />
+	<xsd:attribute name="outputMessage" type="xsd:string" use="required" />
+	<xsd:attribute name="operation" type="xsd:string" use="required" />
+	<xsd:attribute name="port" type="xsd:string" use="required"/>
+	<xsd:attribute name="location" type="xsd:anyURI" use="required"/> 
+	<xsd:attribute name ="namespace" type ="xsd:anyURI" use="required" />
+</xsd:complexType>
+
+<xsd:complexType name="artifactType"> 
+	 <xsd:sequence>
+		<xsd:element name="attributes" type="attributesType" minOccurs = "1" maxOccurs = "1" />
+		<xsd:element name="states" type="statesType" minOccurs = "1" maxOccurs = "1" />
+	</xsd:sequence>
+	<xsd:attribute name="name" type="xsd:string" use="required" />
+</xsd:complexType>
+
+
+
+<xsd:complexType name="ruleType"> 
+	 <xsd:sequence>
+		<xsd:element name="onEvent" type="onEventType" maxOccurs = "1" minOccurs = "1" />
+		<xsd:element name="preCon" type="preconType" maxOccurs = "1" minOccurs = "1" />
+		<xsd:element name="do" type="doType" maxOccurs = "1" minOccurs = "1" />
+		<xsd:element name="postCon" type="postconType" maxOccurs = "1" minOccurs = "1" />
+	</xsd:sequence>
+	<xsd:attribute name="name" type="xsd:string" use="required"/>
+</xsd:complexType>
+
+
+<xsd:complexType name="attributesType"> 
+	 <xsd:sequence>
+		<xsd:element name="attribute" minOccurs = "1" maxOccurs = "unbounded" >
+			<xsd:complexType>
+				<xsd:attribute name="name" type="xsd:string" use="required"/>
+				<xsd:attribute name="structure"  use="required"> <!-- restriced value -->
+					<xsd:simpleType>
+						<xsd:restriction base="xsd:string">
+							  <xsd:enumeration value="pair"/>
+							  <xsd:enumeration value="list"/>
+						</xsd:restriction>
+					</xsd:simpleType>
+				</xsd:attribute>
+				<xsd:attribute name="type"  use="required"> <!-- restriced value -->
+					<xsd:simpleType>
+						<xsd:restriction base="xsd:string">
+							  <xsd:enumeration value="string"/>
+							  <xsd:enumeration value="integer"/>
+							  <xsd:enumeration value="short" />
+							  <xsd:enumeration value="long"/>
+							  <xsd:enumeration value="double"/>
+							  <xsd:enumeration value="artifact"/>
+							  <xsd:enumeration value="boolean"/>
+						</xsd:restriction>
+					</xsd:simpleType>
+				</xsd:attribute>
+				<xsd:attribute name="unique_id"  use="optional"> <!-- restriced value -->
+					<xsd:simpleType>
+						<xsd:restriction base="xsd:string">
+							  <xsd:enumeration value="yes"/>
+							  <xsd:enumeration value="no"/>
+						</xsd:restriction>
+					</xsd:simpleType>
+				</xsd:attribute>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:sequence>  
+</xsd:complexType>
+
+<xsd:complexType name="statesType"> 
+	 <xsd:sequence>
+		<xsd:element name="state" minOccurs = "2" maxOccurs = "unbounded" >
+			<xsd:complexType>
+				<xsd:attribute name="name"  use="required"/>
+				<xsd:attribute name="type" > <!-- restriced value -->
+					<xsd:simpleType>
+						<xsd:restriction base="xsd:string">
+							  <xsd:enumeration value="init"/>
+							  <xsd:enumeration value="end"/>
+						</xsd:restriction>
+					</xsd:simpleType>
+				</xsd:attribute>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:sequence>  
+</xsd:complexType>
+
+<xsd:complexType name="onEventType"> 	
+	<xsd:attribute name="type"  use="required">		<!-- restriced value -->
+		<xsd:simpleType>
+			<xsd:restriction base="xsd:string">
+				<xsd:enumeration value="messageReceivedEvent"/>
+				<xsd:enumeration value="artifactChangedEvent"/>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:attribute>		
+</xsd:complexType>
+
+<xsd:complexType name="preconType"> 
+	 <xsd:sequence>
+		<xsd:element name="and" type = "andType" minOccurs = "1" maxOccurs = "1" />	
+	</xsd:sequence>  
+</xsd:complexType>
+
+<xsd:complexType name="postconType"> 
+	 <xsd:sequence>
+		<xsd:element name="and" type = "andType" minOccurs = "1" maxOccurs = "1" />	
+	</xsd:sequence>  
+</xsd:complexType>
+
+
+<xsd:complexType name="andType"> 
+	 <xsd:sequence>
+		<xsd:element name="atom" minOccurs = "1" maxOccurs = "unbounded"  >	
+			<xsd:complexType> 
+				<xsd:attribute name="artifact" type="xsd:string" use="optional"/>
+				<xsd:attribute name="id" type="xsd:string" use="optional"/>
+				<xsd:attribute name="attribute" type="xsd:string" use="optional"/>
+				<xsd:attribute name="value" type="xsd:string" use="required"/>
+				<xsd:attribute name="type"  use="required"> <!-- restriced value -->
+					<xsd:simpleType>
+						<xsd:restriction base="xsd:string">
+							<xsd:enumeration value="attribute"/>
+							<xsd:enumeration value="state"/>
+							<xsd:enumeration value="input"/>
+						</xsd:restriction>
+					</xsd:simpleType>
+				</xsd:attribute>
+				<xsd:attribute name="op"  use="optional"> <!-- restriced value -->
+					<xsd:simpleType>
+						<xsd:restriction base="xsd:string">
+							<xsd:enumeration value="=="/>
+							<xsd:enumeration value="&gt;"/>
+							<xsd:enumeration value="&lt;" />
+							<xsd:enumeration value="&lt;=" />
+							<xsd:enumeration value="&gt;=" />
+							<xsd:enumeration value="!=" />
+						</xsd:restriction>
+					</xsd:simpleType>
+				</xsd:attribute>
+			</xsd:complexType> 	
+		</xsd:element>
+	</xsd:sequence>  
+</xsd:complexType>
+
+<xsd:complexType name="doType"> 
+	 <xsd:sequence>
+		<xsd:element name="invoke" type="invokeType"  maxOccurs = "1" minOccurs = "1" />
+	</xsd:sequence> 
+</xsd:complexType>
+
+<xsd:complexType name="invokeType"> 
+	 <xsd:sequence>
+		<xsd:element name="mapping" type="mappingType"  maxOccurs = "1" minOccurs = "1" />
+		<xsd:element name="transitions" type = "transitionsType" maxOccurs = "1" minOccurs = "1"  />
+	</xsd:sequence>
+	<xsd:attribute name="type"  use="required"> <!-- restriced value -->
+		<xsd:simpleType>
+			<xsd:restriction base="xsd:string">
+				<xsd:enumeration value="system"/>
+				<xsd:enumeration value="local"/>
+				<xsd:enumeration value="external"/>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:attribute>
+	<xsd:attribute name="operation" type="xsd:string" use="required"/>
+	<xsd:attribute name="service" type="xsd:string" use="required"/>
+</xsd:complexType>
+
+<xsd:complexType name="mappingType"> 
+	 <xsd:sequence>
+		<xsd:element name="map" type = "maptype"  minOccurs = "0" maxOccurs = "unbounded" /> 
+	</xsd:sequence> 
+</xsd:complexType>
+
+<xsd:complexType name="transitionsType">
+	<xsd:sequence>	
+			<xsd:element name="transition"  type = "transitionType"  minOccurs = "0" maxOccurs = "unbounded" />
+	</xsd:sequence>	
+</xsd:complexType>
+
+<xsd:complexType name="maptype">
+	<xsd:sequence>
+		<xsd:element name="copy" type = "copyType" minOccurs = "1" maxOccurs = "unbounded" />
+	</xsd:sequence>
+	<xsd:attribute name="type" use="required">
+		<xsd:simpleType>
+			<xsd:restriction base="xsd:string">
+				<xsd:enumeration value="ArtifactToMessage"/>
+				<xsd:enumeration value="MessageToArtifact"/>
+				<xsd:enumeration value="RequestToArtifact"/>
+				<xsd:enumeration value="MessageToMessage"/>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:attribute>
+</xsd:complexType>
+
+<xsd:complexType name="copyType">
+	<xsd:all>
+		<xsd:element name= "from" type = "fromType" />
+		<xsd:element name= "to" type = "toType" />	
+	</xsd:all>
+</xsd:complexType>
+
+
+<xsd:complexType name = "fromType">
+	<xsd:attribute name="artifact" type="xsd:string" use="optional"/>
+	<xsd:attribute name="message" type="xsd:string" use="optional"/>
+	<xsd:attribute name="part" type="xsd:string" use="optional"/>
+	<xsd:attribute name="attribute" type="xsd:string" use="optional"/>	
+</xsd:complexType>
+
+<xsd:complexType name = "toType">
+	<xsd:attribute name="artifact" type="xsd:string" use="optional"/>
+	<xsd:attribute name="message" type="xsd:string" use="optional"/>
+	<xsd:attribute name="part" type="xsd:string" use="optional"/>
+	<xsd:attribute name="attribute" type="xsd:string" use="optional"/>	
+</xsd:complexType>
+
+
+<xsd:complexType name="transitionType">
+	<xsd:attribute name="artifact" type="xsd:string" use="required"/> 
+	<xsd:attribute name="fromState" type="xsd:string" use="required"/>
+	<xsd:attribute name="toState" type="xsd:string" use="required"/>
+</xsd:complexType>
+
+</xsd:schema>

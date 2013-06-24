@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<log process_id="order_process-P3">
+<record no="1">
+<timestamp>Oct 11, 2012 1:17:43 PM</timestamp>
+<ruleId>r01-createOrder:R1</ruleId>
+<serviceId>createOrderService:S1</serviceId>
+<pre_artifact>
+<order id="" state="start">
+<orderId>null</orderId>
+<orderItem>null</orderItem>
+<quantity>null</quantity>
+<customerAddress>null</customerAddress>
+<customerName>null</customerName>
+<grand_total>null</grand_total>
+<amount_paid>null</amount_paid>
+<order_item_submit_date>null</order_item_submit_date>
+<order_item_complete_date>null</order_item_complete_date>
+</order>
+</pre_artifact>
+<post_artifact>
+<order id="order:order2012/10/11 13:17:43" state="open_for_item">
+<orderId>order2012/10/11 13:17:43</orderId>
+<orderItem>null</orderItem>
+<quantity>null</quantity>
+<customerAddress>gfhfh</customerAddress>
+<customerName>Kan Ngm</customerName>
+<grand_total>null</grand_total>
+<amount_paid>null</amount_paid>
+<order_item_submit_date>null</order_item_submit_date>
+<order_item_complete_date>null</order_item_complete_date>
+</order>
+</post_artifact>
+</record>
+<record no="2">
+<timestamp>Oct 11, 2012 1:21:31 PM</timestamp>
+<ruleId>r02-addOrderItem:R2</ruleId>
+<serviceId>GrandTotalService:S2</serviceId>
+<pre_artifact>
+<order id="order:order2012/10/11 13:17:43" state="open_for_item">
+<orderId>order2012/10/11 13:17:43</orderId>
+<orderItem>null</orderItem>
+<quantity>null</quantity>
+<customerAddress>gfhfh</customerAddress>
+<customerName>Kan Ngm</customerName>
+<grand_total>null</grand_total>
+<amount_paid>null</amount_paid>
+<order_item_submit_date>null</order_item_submit_date>
+<order_item_complete_date>null</order_item_complete_date>
+</order>
+</pre_artifact>
+<post_artifact>
+<order id="order:order2012/10/11 13:17:43" state="ready_for_payment">
+<orderId>order2012/10/11 13:17:43</orderId>
+<orderItem>Iphone5</orderItem>
+<quantity>2</quantity>
+<customerAddress>gfhfh</customerAddress>
+<customerName>Kan Ngm</customerName>
+<grand_total>2400.0</grand_total>
+<amount_paid>null</amount_paid>
+<order_item_submit_date>null</order_item_submit_date>
+<order_item_complete_date>null</order_item_complete_date>
+</order>
+</post_artifact>
+</record>
+</log>

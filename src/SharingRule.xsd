@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.swin.edu.au" xmlns="http://www.swin.edu.au" elementFormDefault="qualified">
+<xsd:element name="client_sharing_rule">
+  <xsd:complexType>
+    <xsd:sequence>
+      <xsd:element name="rule" type="ruleType" minOccurs = "1" maxOccurs = "unbounded"  />   
+    </xsd:sequence>
+	<xsd:attribute name="process_type" type="xsd:string" use="required"/>
+  </xsd:complexType>
+</xsd:element>
+
+<xsd:complexType name="ruleType">
+  <xsd:sequence>
+    <xsd:element name="when" type="whenType" minOccurs = "1" maxOccurs = "1" />
+    <xsd:element name="share" type="shareType" minOccurs = "1" maxOccurs = "1" />
+  </xsd:sequence>
+  <xsd:attribute name="no" type="xsd:string" use="required" />
+</xsd:complexType>
+
+
+<xsd:complexType name="whenType">
+  <xsd:sequence>
+    <xsd:element name="artifact_changed" type="artifactChangedType" minOccurs = "1" maxOccurs = "unbounded" />
+  
+  </xsd:sequence>
+</xsd:complexType>
+
+<xsd:complexType name="artifactChangedType">
+  <xsd:sequence>
+    <xsd:element name="name" type="xsd:string" minOccurs = "1" maxOccurs = "1" />
+  <xsd:element name="state" type="xsd:string" minOccurs = "0" maxOccurs = "1" />
+  </xsd:sequence>
+</xsd:complexType>
+
+<xsd:complexType name="shareType">
+  <xsd:sequence>
+    <xsd:element name="artifact" type="artifactType" minOccurs = "1" maxOccurs = "unbounded" />
+    
+  </xsd:sequence>
+</xsd:complexType>
+
+
+<xsd:complexType name="artifactType">
+  <xsd:sequence>
+    <xsd:element name="name" type="xsd:string" minOccurs = "1" maxOccurs = "1" />
+  <xsd:element name="attributes" type="attributeType" minOccurs = "1" maxOccurs = "1" />
+  </xsd:sequence>
+</xsd:complexType>
+
+<xsd:complexType name="attributeType">
+  <xsd:sequence>
+  <xsd:element name="attribute" type="xsd:string" minOccurs = "1" maxOccurs = "unbounded"  />
+  </xsd:sequence>
+</xsd:complexType>
+
+</xsd:schema>

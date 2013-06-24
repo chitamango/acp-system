@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<log process_id="payment_process-P4">
+<record no="1">
+<timestamp>Oct 11, 2012 1:21:33 PM</timestamp>
+<ruleId>r01-createInvoice:R1</ruleId>
+<serviceId>InvoiceService:S1</serviceId>
+<pre_artifact>
+<invoice id="" state="start">
+<invoiceId>null</invoiceId>
+<customerName>null</customerName>
+<issue_date>null</issue_date>
+<grand_total>null</grand_total>
+<amount_paid>null</amount_paid>
+</invoice>
+</pre_artifact>
+<post_artifact>
+<invoice id="invoice:1111" state="unpaid">
+<invoiceId>1111</invoiceId>
+<customerName>Kan Ngm</customerName>
+<issue_date>Oct 11, 2012 1:21:33 PM</issue_date>
+<grand_total>2400.0</grand_total>
+<amount_paid>null</amount_paid>
+</invoice>
+</post_artifact>
+</record>
+</log>
