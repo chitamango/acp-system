@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <log process_id="order_process-P1">
 <record no="1">
-<timestamp>Oct 21, 2012 4:42:23 PM</timestamp>
+<timestamp>Apr 14, 2014 10:57:26 AM</timestamp>
 <ruleId>r01-createOrder:R1</ruleId>
 <serviceId>createOrderService:S1</serviceId>
 <pre_artifact>
@@ -17,102 +17,15 @@
 </order>
 </pre_artifact>
 <post_artifact>
-<order id="order:order2012/10/21 16:42:23" state="open_for_item">
-<orderId>order2012/10/21 16:42:23</orderId>
+<order id="order:order2014/04/14 10:57:27" state="open_for_item">
+<orderId>order2014/04/14 10:57:27</orderId>
 <orderItem>null</orderItem>
 <quantity>null</quantity>
-<customerAddress>1/24 Belmont Ave</customerAddress>
-<customerName>Kan Ngamakeur</customerName>
+<customerAddress/>
+<customerName/>
 <grand_total>null</grand_total>
 <order_item_submit_date>null</order_item_submit_date>
 <order_item_complete_date>null</order_item_complete_date>
-</order>
-</post_artifact>
-</record>
-<record no="2">
-<timestamp>Oct 21, 2012 4:42:35 PM</timestamp>
-<ruleId>r02-addOrderItem:R2</ruleId>
-<serviceId>GrandTotalService:S2</serviceId>
-<pre_artifact>
-<order id="order:order2012/10/21 16:42:23" state="open_for_item">
-<orderId>order2012/10/21 16:42:23</orderId>
-<orderItem>null</orderItem>
-<quantity>null</quantity>
-<customerAddress>1/24 Belmont Ave</customerAddress>
-<customerName>Kan Ngamakeur</customerName>
-<grand_total>null</grand_total>
-<order_item_submit_date>null</order_item_submit_date>
-<order_item_complete_date>null</order_item_complete_date>
-</order>
-</pre_artifact>
-<post_artifact>
-<order id="order:order2012/10/21 16:42:23" state="ready_for_payment">
-<orderId>order2012/10/21 16:42:23</orderId>
-<orderItem>iphone5</orderItem>
-<quantity>1</quantity>
-<customerAddress>1/24 Belmont Ave</customerAddress>
-<customerName>Kan Ngamakeur</customerName>
-<grand_total>1200.0</grand_total>
-<order_item_submit_date>null</order_item_submit_date>
-<order_item_complete_date>null</order_item_complete_date>
-</order>
-</post_artifact>
-</record>
-<record no="3">
-<timestamp>Oct 21, 2012 4:43:07 PM</timestamp>
-<ruleId>r03-submitOrderItem:R3</ruleId>
-<serviceId>ManufacturingService:S3</serviceId>
-<pre_artifact>
-<order id="order:order2012/10/21 16:42:23" state="ready_for_payment">
-<orderId>order2012/10/21 16:42:23</orderId>
-<orderItem>iphone5</orderItem>
-<quantity>1</quantity>
-<customerAddress>1/24 Belmont Ave</customerAddress>
-<customerName>Kan Ngamakeur</customerName>
-<grand_total>1200.0</grand_total>
-<order_item_submit_date>null</order_item_submit_date>
-<order_item_complete_date>null</order_item_complete_date>
-</order>
-</pre_artifact>
-<post_artifact>
-<order id="order:order2012/10/21 16:42:23" state="processing_order_item">
-<orderId>order2012/10/21 16:42:23</orderId>
-<orderItem>iphone5</orderItem>
-<quantity>1</quantity>
-<customerAddress>1/24 Belmont Ave</customerAddress>
-<customerName>Kan Ngamakeur</customerName>
-<grand_total>1200.0</grand_total>
-<order_item_submit_date>Oct 21, 2012 4:43:07 PM</order_item_submit_date>
-<order_item_complete_date>null</order_item_complete_date>
-</order>
-</post_artifact>
-</record>
-<record no="4">
-<timestamp>Oct 21, 2012 4:43:09 PM</timestamp>
-<ruleId>r04-confirmOrderItem:R4</ruleId>
-<serviceId>ManufacturingService:S4</serviceId>
-<pre_artifact>
-<order id="order:order2012/10/21 16:42:23" state="processing_order_item">
-<orderId>order2012/10/21 16:42:23</orderId>
-<orderItem>iphone5</orderItem>
-<quantity>1</quantity>
-<customerAddress>1/24 Belmont Ave</customerAddress>
-<customerName>Kan Ngamakeur</customerName>
-<grand_total>1200.0</grand_total>
-<order_item_submit_date>Oct 21, 2012 4:43:07 PM</order_item_submit_date>
-<order_item_complete_date>null</order_item_complete_date>
-</order>
-</pre_artifact>
-<post_artifact>
-<order id="order:order2012/10/21 16:42:23" state="order_item_completed">
-<orderId>order2012/10/21 16:42:23</orderId>
-<orderItem>iphone5</orderItem>
-<quantity>1</quantity>
-<customerAddress>1/24 Belmont Ave</customerAddress>
-<customerName>Kan Ngamakeur</customerName>
-<grand_total>1200.0</grand_total>
-<order_item_submit_date>Oct 21, 2012 4:43:07 PM</order_item_submit_date>
-<order_item_complete_date>Oct 21, 2012 4:43:09 PM</order_item_complete_date>
 </order>
 </post_artifact>
 </record>

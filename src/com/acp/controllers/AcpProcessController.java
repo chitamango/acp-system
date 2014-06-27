@@ -80,7 +80,7 @@ public class AcpProcessController extends Thread {
 				System.out.println("time to notify");
 				
 				try {
-					Thread.sleep(2000);
+					Thread.sleep(5000);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -301,8 +301,13 @@ public class AcpProcessController extends Thread {
 			
 		Acplogger.createProcessLogRecord(Process.getProcessLog(), Process.getArtifactInstanceList(), ExecutedRule.getRuleId(), InvokingService.getServiceID(), ExecutedRule.getTimeStamp());
 	//problem with service controller	
+		
+		if(ServiceName != "selftransitionService")
+		{	
+		
 		serviceController.invokeService(Process.getArtifactInstanceList(),userMessage,ServiceName,OprationName, ExecutedRule, Process,InvokingService); 
 		
+		}
 		//update artifact 
 		
 		artifactController.updateArtifact(Process.getArtifactInstanceList(), InvokingService.getSoapOutputMessage(), Process, ExecutedRule);
@@ -353,6 +358,10 @@ public class AcpProcessController extends Thread {
 				
 			}
 		}
+		
+	
+		
+		
 		
 		
 		//fire event

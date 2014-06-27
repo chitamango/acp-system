@@ -67,6 +67,8 @@ public class ServiceController {
 		InvokedService= Service;
 	//	InvokedService = Process.getServiceInstance(ServiceName,OperationName);
 		
+		System.out.println(userMessage);
+		
 		System.out.println(InvokedService.getServiceName()+":"+ InvokedService.getOperation());
 		
 		if(this.checkServiceClient(ServiceName) == null)
@@ -114,7 +116,7 @@ public class ServiceController {
 				}		
 				
 			}
-			System.out.println(SOAPinputMessage);
+			//System.out.println(SOAPinputMessage);
 			
 			if(userMessage != null)	
 			{
@@ -133,7 +135,7 @@ public class ServiceController {
 			
 			InvokedService.setSoapInputMessage(SOAPinputMessage);
 			
-			//System.out.println(SOAPinputMessage);
+			System.out.println(SOAPinputMessage);
 			System.out.println("Success createPayload");
 		
 			
@@ -147,7 +149,7 @@ public class ServiceController {
 		
        SOAPoutputMessage = client.sendReceive(new QName(InvokedService.getNamespace(),InvokedService.getOperation()), SOAPinputMessage);
        
-      // System.out.println(SOAPoutputMessage);
+       System.out.println(SOAPoutputMessage);
        
        //this to prevent Axis2 timeout error
        client.cleanupTransport();

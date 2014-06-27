@@ -84,7 +84,7 @@ public class SharedArtifactClientManager extends Thread{
 		String role = 	CoordinationMessage.getFirstChildWithName(RoleElementQname).getText();
 		OMElement payloadMessage = CoordinationMessage.getFirstChildWithName(payloadMessageElementQname).getFirstElement();
 		
-		System.out.println(payloadMessage);
+		//System.out.println(payloadMessage);
 		
 		HashMap<String,String> CorrelationtTableKey = new HashMap<String,String>();
 		

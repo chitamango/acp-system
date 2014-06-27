@@ -45,7 +45,7 @@ public class Acpserver extends SimpleHTTPServer {
 			
 				super.start();
 			
-			 	System.out.println("Server started on port 8080 ");
+			 	System.out.println("Server started on port 3000 ");
 	            
 	            System.out.println("initialize Event listener");
 	            
@@ -123,7 +123,7 @@ public class Acpserver extends SimpleHTTPServer {
 				
 					
 				 //change server port here
-					new Acpserver(confContext, 8080).start();
+					new Acpserver(confContext, 3000).start();
 					
 				
 			} catch (AxisFault e) {
