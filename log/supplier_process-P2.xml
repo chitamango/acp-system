@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<log process_id="supplier_process-P2">
+<record no="1">
+<timestamp>Jun 13, 2014 4:23:14 PM</timestamp>
+<ruleId>r01-createPL:R1</ruleId>
+<serviceId>createPLService:S1</serviceId>
+<pre_artifact>
+<pickingList id="" state="init">
+<pickinglistId>null</pickinglistId>
+<orderId>null</orderId>
+<productItem>null</productItem>
+<requestQuantity>null</requestQuantity>
+<stockQuantity>null</stockQuantity>
+<receivedDate>null</receivedDate>
+<confirmedDate>null</confirmedDate>
+<cancelledDate>null</cancelledDate>
+<readyTOfilledDate>null</readyTOfilledDate>
+<filledQuantity>null</filledQuantity>
+<filledDate>null</filledDate>
+<subtotal>null</subtotal>
+<tax>null</tax>
+<total>null</total>
+</pickingList>
+</pre_artifact>
+<post_artifact>
+<pickingList id="pickingList:PL20140613162314" state="checking">
+<pickinglistId>PL20140613162314</pickinglistId>
+<orderId>Q20140613162259</orderId>
+<productItem>Nexus5</productItem>
+<requestQuantity>50</requestQuantity>
+<stockQuantity>30</stockQuantity>
+<receivedDate>2014/06/13 16:23:14</receivedDate>
+<confirmedDate>null</confirmedDate>
+<cancelledDate>null</cancelledDate>
+<readyTOfilledDate>null</readyTOfilledDate>
+<filledQuantity>null</filledQuantity>
+<filledDate>null</filledDate>
+<subtotal>null</subtotal>
+<tax>null</tax>
+<total>null</total>
+</pickingList>
+</post_artifact>
+</record>
+<record no="2">
+<timestamp>Jun 13, 2014 4:23:22 PM</timestamp>
+<ruleId>r02-cancelPL:R2</ruleId>
+<serviceId>CancelPLService:S2</serviceId>
+<pre_artifact>
+<pickingList id="pickingList:PL20140613162314" state="checking">
+<pickinglistId>PL20140613162314</pickinglistId>
+<orderId>Q20140613162259</orderId>
+<productItem>Nexus5</productItem>
+<requestQuantity>50</requestQuantity>
+<stockQuantity>30</stockQuantity>
+<receivedDate>2014/06/13 16:23:14</receivedDate>
+<confirmedDate>null</confirmedDate>
+<cancelledDate>null</cancelledDate>
+<readyTOfilledDate>null</readyTOfilledDate>
+<filledQuantity>null</filledQuantity>
+<filledDate>null</filledDate>
+<subtotal>null</subtotal>
+<tax>null</tax>
+<total>null</total>
+</pickingList>
+</pre_artifact>
+<post_artifact>
+<pickingList id="pickingList:PL20140613162314" state="out_of_stock">
+<pickinglistId>PL20140613162314</pickinglistId>
+<orderId>Q20140613162259</orderId>
+<productItem>Nexus5</productItem>
+<requestQuantity>50</requestQuantity>
+<stockQuantity>30</stockQuantity>
+<receivedDate>2014/06/13 16:23:14</receivedDate>
+<confirmedDate>null</confirmedDate>
+<cancelledDate>2014/06/13 16:23:22</cancelledDate>
+<readyTOfilledDate>null</readyTOfilledDate>
+<filledQuantity>null</filledQuantity>
+<filledDate>null</filledDate>
+<subtotal>null</subtotal>
+<tax>null</tax>
+<total>null</total>
+</pickingList>
+</post_artifact>
+</record>
+</log>

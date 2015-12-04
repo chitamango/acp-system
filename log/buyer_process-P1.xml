@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<log process_id="buyer_process-P1">
+<record no="1">
+<timestamp>Jun 13, 2014 4:33:47 PM</timestamp>
+<ruleId>r01-createQuote:R1</ruleId>
+<serviceId>CreateQservice:S1</serviceId>
+<pre_artifact>
+<quote id="" state="init">
+<quoteId>null</quoteId>
+<supplierId>null</supplierId>
+<submittedDate>null</submittedDate>
+<cancelledDate>null</cancelledDate>
+<comfirmedDate>null</comfirmedDate>
+<productItem>null</productItem>
+<quantity>null</quantity>
+</quote>
+</pre_artifact>
+<post_artifact>
+<quote id="quote:Q20140613163347" state="created">
+<quoteId>Q20140613163347</quoteId>
+<supplierId>Asus</supplierId>
+<submittedDate>2014/06/13 16:33:47</submittedDate>
+<cancelledDate>null</cancelledDate>
+<comfirmedDate>null</comfirmedDate>
+<productItem>Nexus5</productItem>
+<quantity>30</quantity>
+</quote>
+</post_artifact>
+</record>
+<record no="2">
+<timestamp>Jun 13, 2014 4:33:50 PM</timestamp>
+<ruleId>r02-approvingQuote:R2</ruleId>
+<serviceId>selftransitionService:S2</serviceId>
+<pre_artifact>
+<quote id="quote:Q20140613163347" state="created">
+<quoteId>Q20140613163347</quoteId>
+<supplierId>Asus</supplierId>
+<submittedDate>2014/06/13 16:33:47</submittedDate>
+<cancelledDate>null</cancelledDate>
+<comfirmedDate>null</comfirmedDate>
+<productItem>Nexus5</productItem>
+<quantity>30</quantity>
+</quote>
+</pre_artifact>
+<post_artifact>
+<quote id="quote:Q20140613163347" state="approving">
+<quoteId>Q20140613163347</quoteId>
+<supplierId>Asus</supplierId>
+<submittedDate>2014/06/13 16:33:47</submittedDate>
+<cancelledDate>null</cancelledDate>
+<comfirmedDate>null</comfirmedDate>
+<productItem>Nexus5</productItem>
+<quantity>30</quantity>
+</quote>
+</post_artifact>
+</record>
+<record no="3">
+<timestamp>Jun 13, 2014 4:34:11 PM</timestamp>
+<ruleId>r04-cancelQuote:R3</ruleId>
+<serviceId>CancelQservice:S3</serviceId>
+<pre_artifact>
+<quote id="quote:Q20140613163347" state="approving">
+<quoteId>Q20140613163347</quoteId>
+<supplierId>Asus</supplierId>
+<submittedDate>2014/06/13 16:33:47</submittedDate>
+<cancelledDate>null</cancelledDate>
+<comfirmedDate>null</comfirmedDate>
+<productItem>Nexus5</productItem>
+<quantity>30</quantity>
+</quote>
+</pre_artifact>
+<post_artifact>
+<quote id="quote:Q20140613163347" state="rejected">
+<quoteId>Q20140613163347</quoteId>
+<supplierId>Asus</supplierId>
+<submittedDate>2014/06/13 16:33:47</submittedDate>
+<cancelledDate>2014/06/13 16:34:11</cancelledDate>
+<comfirmedDate>null</comfirmedDate>
+<productItem>Nexus5</productItem>
+<quantity>30</quantity>
+</quote>
+</post_artifact>
+</record>
+</log>

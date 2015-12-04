@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?><process xmlns="http://www.swin.edu.au" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="supplier_process" xsi:schemaLocation="http://www.swin.edu.au ACPdefintion.xsd">
+	<services>
+		<service inputMessage="createPickingLIstRequest" location="http://localhost:8080/CreatePLService/services/createPLService?wsdl" name="createPLService" namespace="http://createPLService.com" operation="createPickingLIst" outputMessage="createPickingLIstResponse" port="createPLServiceHttpSoap11Endpoint" />
+		<service inputMessage="cancelPickingListRequest" location="http://localhost:8080/CancelPLService/services/CancelPLService?wsdl" name="CancelPLService" namespace="http://cancelPLService.com" operation="cancelPickingList" outputMessage="cancelPickingListResponse" port="CancelPLServiceHttpSoap11Endpoint" />
+		 <service inputMessage="comfirmPickingListRequest" location="http://localhost:8080/ConfirmPLService/services/ConfirmPLService?wsdl" name="ConfirmPLService" namespace="http://comfirmPLService.com" operation="comfirmPickingList" outputMessage="comfirmPickingListResponse" port="ConfirmPLServiceHttpSoap11Endpoint" />
+		<service inputMessage="preparePickingListRequest" location="http://localhost:8080/PreparePLService/services/PreparePLService?wsdl" name="PreparePLService" namespace="http://preparePLService.com" operation="preparePickingList" outputMessage="preparePickingListResponse" port="PreparePLServiceHttpSoap11Endpoint" />
+		<service inputMessage="fillPickingListRequest" location="http://localhost:8080/FillPLservice/services/FillPLService?wsdl" name="FillPLService" namespace="http://fillPLService.com" operation="fillPickingList" outputMessage="fillPickingListResponse" port="FillPLServiceHttpSoap11Endpoint" />	
+		<!--  <service inputMessage="CreateInvoiceRequest" location="http://localhost:8080/axis2/services/InvoiceService?wsdl" name="createDeliveryNoteService" namespace="http://invoiceService.test" operation="CreatePL" outputMessage="CreateInvoiceResponse" port="InvoiceServiceHttpSoap11Endpoint" />
+		<service inputMessage="CreateInvoiceRequest" location="http://localhost:8080/axis2/services/InvoiceService?wsdl" name="transferDeliveryNoteService" namespace="http://invoiceService.test" operation="CreatePL" outputMessage="CreateInvoiceResponse" port="InvoiceServiceHttpSoap11Endpoint" />					
+		-->
+	</services>
+	<artifacts>
+		<artifact name="pickingList">
+			<attributes>
+				<attribute name ="pickinglistId" structure ="pair" type ="string" unique_id = "yes" />
+				<attribute name = "orderId" structure = "pair" type = "string" />
+				<attribute name = "productItem" structure = "pair" type = "string" />
+				<attribute name = "requestQuantity" structure = "pair" type = "string" /> 
+				<attribute name = "stockQuantity" structure = "pair" type = "string" />
+				<attribute name = "receivedDate" structure = "pair" type = "string" />
+				<attribute name = "confirmedDate" structure = "pair" type = "string" />
+				<attribute name = "cancelledDate" structure = "pair" type = "string" />
+				<attribute name = "readyTOfilledDate" structure = "pair" type = "string" />   
+				<attribute name = "filledQuantity" structure = "pair" type = "string" />
+				<attribute name = "filledDate" structure = "pair" type = "string" /> 
+				<attribute name = "subtotal" structure = "pair" type = "string" />  
+				<attribute name = "tax" structure = "pair" type = "string" /> 
+				<attribute name = "total" structure = "pair" type = "string" />     
+			</attributes>
+			<states>
+				<state name ="init" type ="init"/> <!--  init/end -->
+				<state name ="checking"/> 
+				<state name = "in_stock"/>
+				<state name = "ready_to_filled"/>
+				<state name ="out_of_stock" type ="end"/>
+				<state name ="filled_order" type ="end"/>
+			</states>
+		</artifact>
+		<artifact name="deliveryNote">
+			<attributes>
+				<attribute name ="deliveryNoteId" structure ="pair" type ="string" unique_id = "yes" />
+				<attribute name = "orderId" structure = "pair" type = "String" />
+				<attribute name = "deliveryNote" structure = "pair" type = "Integer" />
+				<attribute name = "NoteTransferredDate" structure = "pair" type = "String" /> 
+				<attribute name = "NoteReceivedDate" structure = "pair" type = "String" /> 		
+			</attributes>
+			<states>
+				<state name ="init" type ="init"/> <!--  init/end -->
+				<state name ="prepared"/> 
+				<state name = "transfering"/>
+				<state name ="dispatched" type ="end"/>	
+			</states>
+		</artifact>	
+	</artifacts>
+<!-- rule have to change don't forget to change drool file -->
+	<businessRules>
+		<rule name="r01-createPL">
+		<onEvent type="messageReceivedEvent"/>  
+			<preCon>
+				<and>
+					<atom type="state" value="init"/>
+					<atom type="state" value="init"/>
+					<atom type="state" value="init"/>
+				</and>
+			</preCon> 
+			<do> <!-- input should be list of artifact that related to the process // internl or external -->
+				<invoke operation="createPickingLIst" service="createPLService" type="External"> <!--  internal/external  -->
+					<mapping>
+						<map type = "MessageToMessage"> 
+							<copy>
+								<from Message = "receivePORequest"  part="orderId"/> 
+								<to message = "createPickingLIstRequest" part = "orderId"/>
+							</copy>
+							<copy>
+								<from Message = "receivePORequest"  part="productItem"/> 
+								<to message = "createPickingLIstRequest" part = "productionItem"/>
+							</copy>
+							<copy>
+								<from Message = "receivePORequest"  part="quantity"/> 
+								<to message = "createPickingLIstRequest" part = "quantity"/>
+							</copy>
+						</map>
+						<map type = "MessageToArtifact"> 
+							<copy>
+								<from message = "createPickingLIstResponse" part = "orderId"/>
+								<to artifact = "pickingList" attribute ="orderId"/> 							
+							</copy>
+							<copy>
+								<from message = "createPickingLIstResponse" part = "pickinglistId"/>
+								<to artifact = "pickingList" attribute ="pickinglistId"/> 							
+							</copy>
+							<copy>
+								<from message = "createPickingLIstResponse" part = "productItem"/>
+								<to artifact = "pickingList" attribute ="productItem"/> 							
+							</copy>
+							<copy>
+								<from message = "createPickingLIstResponse" part = "stockQuantity"/>
+								<to artifact = "pickingList" attribute ="stockQuantity"/> 							
+							</copy>
+							<copy>
+								<from message = "createPickingLIstResponse" part = "requestQuantity"/>
+								<to artifact = "pickingList" attribute ="requestQuantity"/> 							
+							</copy>
+							<copy>
+								<from message = "createPickingLIstResponse" part = "ListReceivedDate"/>
+								<to artifact = "pickingList" attribute ="receivedDate"/> 							
+							</copy>
+						</map>
+					</mapping>
+					<transitions>
+						<transition artifact="pickingList" fromState="init" toState="checking"/> <!-- can have more than one transition -->
+					</transitions>
+				</invoke>
+			</do>
+		</rule>
+		<rule name="r02-cancelPL">
+		<onEvent type="messageReceivedEvent"/>  
+			<preCon>
+				<and>
+					<atom type="state" value="init"/>
+					<atom type="state" value="init"/>
+					<atom type="state" value="init"/>
+				</and>
+			</preCon> 
+			<do> <!-- input should be list of artifact that related to the process // internl or external -->
+				<invoke operation="cancelPickingList" service="CancelPLService" type="External"> <!--  internal/external  -->
+					<mapping>
+						<map type = "ArtifactToMessage"> 
+							<copy>
+								<from artifact = "pickingList"  attribute ="pickinglistId"/> 
+								<to message = "cancelPickingListRequest" part = "pickingListId"/>
+							</copy>
+						</map>
+						<map type = "MessageToArtifact"> 
+							<copy>
+								<from message = "cancelPickingListResponse" part = "cancelledDate"/>
+								<to artifact = "pickingList" attribute ="cancelledDate"/> 							
+							</copy>
+							
+						</map>
+					</mapping>
+					<transitions>
+						<transition artifact="pickingList" fromState="checking" toState="out_of_stock"/> <!-- can have more than one transition -->
+					</transitions>
+				</invoke>
+			</do>
+		</rule>
+		<rule name="r03-confirmPL">
+		<onEvent type="messageReceivedEvent"/>  
+			<preCon>
+				<and>
+					<atom type="state" value="init"/>
+					<atom type="state" value="init"/>
+					<atom type="state" value="init"/>
+				</and>
+			</preCon> 
+			<do> <!-- input should be list of artifact that related to the process // internl or external -->
+				<invoke operation="comfirmPickingList" service="ConfirmPLService" type="External"> <!--  internal/external  -->
+					<mapping>
+						<map type = "ArtifactToMessage"> 
+							<copy>
+								<from artifact = "pickingList"  attribute ="pickinglistId"/> 
+								<to message = "comfirmPickingListRequest" part = "pickingListId"/>
+							</copy>
+						</map>
+						<map type = "MessageToArtifact"> 
+							<copy>
+								<from message = "comfirmPickingListResponse" part = "confirmedDate"/>
+								<to artifact = "pickingList" attribute ="confirmedDate"/> 							
+							</copy>
+							
+						</map>
+					</mapping>
+					<transitions>
+						<transition artifact="pickingList" fromState="checking" toState="in_stock"/> <!-- can have more than one transition -->
+					</transitions>
+				</invoke>
+			</do>
+		</rule>
+		<rule name="r04-preparePL">
+		<onEvent type="messageReceivedEvent"/>  
+			<preCon>
+				<and>
+					<atom type="state" value="init"/>
+					<atom type="state" value="init"/>
+					<atom type="state" value="init"/>
+				</and>
+			</preCon> 
+			<do> <!-- input should be list of artifact that related to the process // internl or external -->
+				<invoke operation="preparePickingList" service="PreparePLService" type="External"> <!--  internal/external  -->
+					<mapping>
+						<map type = "ArtifactToMessage"> 
+							<copy>
+								<from artifact = "pickingList"  attribute ="pickinglistId"/> 
+								<to message = "preparePickingListRequest" part = "pickingListId"/>
+							</copy>
+						</map>
+						<map type = "MessageToArtifact"> 
+							<copy>
+								<from message = "preparePickingListResponse" part = "PreparedDate"/>
+								<to artifact = "pickingList" attribute ="readyTOfilledDate"/> 							
+							</copy>
+							
+						</map>
+					</mapping>
+					<transitions>
+						<transition artifact="pickingList" fromState="in_stock" toState="ready_to_filled"/> <!-- can have more than one transition -->
+					</transitions>
+				</invoke>
+			</do>
+		</rule>
+		<rule name="r05-fillPL">
+		<onEvent type="messageReceivedEvent"/>  
+			<preCon>
+				<and>
+					<atom type="state" value="init"/>
+					<atom type="state" value="init"/>
+					<atom type="state" value="init"/>
+				</and>
+			</preCon> 
+			<do> <!-- input should be list of artifact that related to the process // internl or external -->
+				<invoke operation="fillPickingList" service="FillPLService" type="External"> <!--  internal/external  -->
+					<mapping>
+						<map type = "ArtifactToMessage"> 
+							<copy>
+								<from artifact = "pickingList"  attribute ="pickinglistId"/> 
+								<to message = "fillPickingListRequest" part = "pickingListId"/>
+							</copy>
+						</map>
+						<map type = "MessageToArtifact"> 
+							<copy>
+								<from message = "fillPickingListResponse" part = "filledDate"/>
+								<to artifact = "pickingList" attribute ="filledDate"/> 							
+							</copy>
+							<copy>
+								<from message = "fillPickingListResponse" part = "quantity"/>
+								<to artifact = "pickingList" attribute ="filledQuantity"/> 							
+							</copy>
+							<copy>
+								<from message = "fillPickingListResponse" part = "total"/>
+								<to artifact = "pickingList" attribute ="total"/> 							
+							</copy>
+							<copy>
+								<from message = "fillPickingListResponse" part = "subtotal"/>
+								<to artifact = "pickingList" attribute ="subtotal"/> 							
+							</copy><copy>
+								<from message = "fillPickingListResponse" part = "tax"/>
+								<to artifact = "pickingList" attribute ="tax"/> 							
+							</copy>
+							
+						</map>
+					</mapping>
+					<transitions>
+						<transition artifact="pickingList" fromState="ready_to_filled" toState="filled_order"/> <!-- can have more than one transition -->
+					</transitions>
+				</invoke>
+			</do>
+		</rule>
+		</businessRules>
+</process><!-- //use wsdl as the source of data types used in variable declaration -->

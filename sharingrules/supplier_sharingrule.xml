@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<client_sharing_rule xmlns="http://www.swin.edu.au" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" process_type = "supplier_process">
+      <rule no = "1">
+          <when>
+               <artifact_changed>
+                    <name>pickingList</name>
+                    <state>checking</state>
+               </artifact_changed>
+          </when>
+          <share>
+               <artifact>
+                    <name>pickingList</name>
+                    <attributes>
+                         <attribute>stockQuantity</attribute>
+                         <attribute>receivedDate</attribute>
+                    </attributes>
+              
+               </artifact>
+          </share>
+     </rule>
+      <rule no = "2">
+          <when>
+               <artifact_changed>
+                    <name>pickingList</name>
+                    <state>out_of_stock</state>
+               </artifact_changed>
+          </when>
+          <share>
+               <artifact>
+                    <name>pickingList</name>
+                    <attributes>
+                         <attribute>cancelledDate</attribute>
+                    </attributes>
+              
+               </artifact>
+          </share>
+     </rule>
+      <rule no = "3">
+          <when>
+               <artifact_changed>
+                    <name>pickingList</name>
+                    <state>filled_order</state>
+               </artifact_changed>
+          </when>
+          <share>
+               <artifact>
+                    <name>pickingList</name>
+                    <attributes>
+                         <attribute>filledQuantity</attribute>
+                         <attribute>filledDate</attribute>
+                         <attribute>tax</attribute>
+                         <attribute>subtotal</attribute>
+                         <attribute>total</attribute>
+                    </attributes>
+              
+               </artifact>
+          </share>
+     </rule>
+</client_sharing_rule>

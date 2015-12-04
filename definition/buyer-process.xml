@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process xmlns="http://www.swin.edu.au" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="buyer_process" xsi:schemaLocation="http://www.swin.edu.au ACPdefintion.xsd">
+	<services>
+		<service inputMessage="cancelQuoteRequest" location="http://localhost:8080/CancelQservice/services/CancelQservice?wsdl" name="CancelQservice" namespace="http://cancelQservice.com" operation="cancelQuote" outputMessage="cancelQuoteResponse" port="CancelQserviceHttpSoap11Endpoint" />
+		<service inputMessage="createQuoteRequest" location="http://localhost:8080/CreareQservice/services/CreateQservice?wsdl" name="CreateQservice" namespace="http://createQservice.com" operation="createQuote" outputMessage="createQuoteResponse" port="CreateQserviceHttpSoap11Endpoint" />
+		<service inputMessage="confirmQuoteRequest" location="http://localhost:8080/ConfirmQservice/services/ConfirmQservice?wsdl" name="ConfirmQservice" namespace="http://confirmQservice.com" operation="confirmQuote" outputMessage="confirmQuoteResponse" port="ConfirmQserviceHttpSoap11Endpoint" />
+		<service inputMessage="null" location="null" name="selftransitionService" namespace="null" operation="transistState" outputMessage="null" port="null" />
+	</services>
+	<artifacts>
+		<artifact name ="quote">
+			<attributes>
+				<attribute name = "quoteId" structure ="pair" type ="string" unique_id = "yes" />
+				<attribute name = "supplierId" structure = "pair" type = "String" />
+				<attribute name = "submittedDate" structure = "pair" type = "String" />
+				<attribute name = "cancelledDate" structure = "pair" type = "String" />
+				<attribute name = "comfirmedDate" structure = "pair" type = "String" /> 
+				<attribute name = "productItem" structure = "pair" type = "String" /> 
+				<attribute name = "quantity" structure = "pair" type = "String" />
+			</attributes>
+			<states>
+				<state name ="init" type ="init"/> <!--  init/end -->
+				<state name ="created"/> 
+				<state name = "approving"/>
+				<state name ="accepted" type ="end"/>
+				<state name ="rejected" type ="end"/>
+			</states>
+		</artifact>
+		<artifact name ="payment">
+			<attributes>
+				<attribute name = "paymentId" structure ="pair" type ="String" unique_id = "yes" />
+				<attribute name = "invoiceId" structure = "pair" type = "String" />
+				<attribute name = "amount" structure = "pair" type = "String" />
+				<attribute name = "clearAmount" structure = "pair" type = "String" /> 
+				<attribute name = "clearDate" structure = "pair" type = "String" /> 
+			</attributes>
+			<states>
+				<state name ="init" type ="init"/> <!--  init/end -->
+				<state name ="created"/> 
+				<state name = "approving"/>
+				<state name ="sent" type ="end"/>	
+			</states>
+		</artifact>	
+	</artifacts>
+<!-- rule have to change don't forget to change drool file -->
+	<businessRules>
+		<rule name ="r01-createQuote">
+		<onEvent type ="messageReceivedEvent"/>  
+			<preCon>
+				<and>
+					<atom type ="state" value ="init"/>
+					<atom type ="state" value ="init"/>
+					<atom type ="state" value ="init"/>
+				</and>
+			</preCon> 
+			<do> <!-- input should be list of artifact that related to the process // internl or external -->
+				<invoke operation ="createQuote" service ="CreateQservice" type ="External"> <!--  internal/external  -->
+					<mapping>
+						<map type = "MessageToMessage"> 
+							<copy>
+								<from Message = "createPORequest"  part ="supplierId"/> 
+								<to message = "createQuoteRequest" part = "supplierId"/>
+							</copy>
+							<copy>
+								<from Message = "createPORequest"  part ="productItem"/> 
+								<to message = "createQuoteRequest" part = "productionItem"/>
+							</copy>
+							<copy>
+								<from Message = "createPORequest"  part ="quantity"/> 
+								<to message = "createQuoteRequest" part = "quantity"/>
+							</copy>
+						</map>
+						<map type = "MessageToArtifact"> 
+							<copy>
+								<from message = "createQuoteResponse" part = "quoteId"/>
+								<to artifact = "quote" attribute ="quoteId"/> 							
+							</copy>
+							<copy>
+								<from message = "createQuoteResponse" part = "supplierId"/>
+								<to artifact = "quote" attribute ="supplierId"/> 							
+							</copy>
+							<copy>
+								<from message = "createQuoteResponse" part = "productItem"/>
+								<to artifact = "quote" attribute ="productItem"/> 							
+							</copy>
+							<copy>
+								<from message = "createQuoteResponse" part = "quantity"/>
+								<to artifact = "quote" attribute ="quantity"/> 							
+							</copy>
+							<copy>
+								<from message = "createQuoteResponse" part = "submittedDate"/>
+								<to artifact = "quote" attribute ="submittedDate"/> 							
+							</copy>
+						</map>
+						
+					</mapping>
+					<transitions>
+						<transition artifact ="quote" fromState ="init" toState ="created"/> <!-- can have more than one transition -->
+					</transitions>
+				</invoke>
+			</do>
+		</rule>
+		<rule name ="r02-approvingQuote">
+		<onEvent type ="artifactChangedEvent"/>  
+			<preCon>
+				<and>
+					<atom type ="state" value ="init"/>
+					<atom type ="state" value ="init"/>
+					<atom type ="state" value ="init"/>
+				</and>
+			</preCon> 
+			<do> <!-- input should be list of artifact that related to the process // internl or external -->
+				<invoke operation ="transistState" service ="selftransitionService" type ="internal"> <!--  internal/external  -->
+					<mapping>
+					</mapping>
+					<transitions>
+						<transition artifact ="quote" fromState ="created" toState ="approving"/> <!-- can have more than one transition -->
+					</transitions>
+				</invoke>
+			</do>
+		</rule>
+		<rule name ="r03-confirmQuote">
+		<onEvent type ="messageReceivedEvent"/>  
+			<preCon>
+				<and>
+					<atom type ="state" value ="init"/>
+					<atom type ="state" value ="init"/>
+					<atom type ="state" value ="init"/>
+				</and>
+			</preCon> 
+			<do> <!-- input should be list of artifact that related to the process // internl or external -->
+				<invoke operation ="confirmQuote" service ="ConfirmQservice" type ="External"> <!--  internal/external  -->
+					<mapping>
+						<map type = "ArtifactToMessage"> 
+							<copy>
+								<from artifact = "quote"  attribute ="quoteId"/> 
+								<to message = "confirmQuoteRequest" part = "quoteId"/>
+							</copy>
+						
+						</map>					
+						<map type = "MessageToMessage"> 
+							<copy>
+								<from Message = "confirmPORequest"  part ="confirm"/> 
+								<to message = "confirmQuoteRequest" part = "confirmMessage"/>
+							</copy>
+						</map>
+						<map type = "MessageToArtifact"> 
+							<copy>
+								<from message = "confirmQuoteResponse" part = "quoteId" />
+								<to artifact = "quote" attribute ="quoteId"/> 							
+							</copy>
+							<copy>
+								<from message = "confirmQuoteResponse" part = "confirmedDate"/>
+								<to artifact = "quote" attribute ="comfirmedDate"/> 							
+							</copy>
+						</map>
+						
+					</mapping>
+					<transitions>
+						<transition artifact ="quote" fromState ="approving" toState ="accepted"/> <!-- can have more than one transition -->
+					</transitions>
+				</invoke>
+			</do>
+		</rule>
+		<rule name ="r04-cancelQuote">
+		<onEvent type ="messageReceivedEvent"/>  
+			<preCon>
+				<and>
+					<atom type ="state" value ="init"/>
+					<atom type ="state" value ="init"/>
+					<atom type ="state" value ="init"/>
+				</and>
+			</preCon> 
+			<do> <!-- input should be list of artifact that related to the process // internl or external -->
+				<invoke operation ="cancelQuote" service ="CancelQservice" type ="External"> <!--  internal/external  -->
+					<mapping>
+						<map type = "ArtifactToMessage"> 
+							<copy>
+								<from artifact = "quote"  attribute ="quoteId"/> 
+								<to message = "cancelQuoteRequest" part = "quoteId"/>
+							</copy>
+						
+						</map>					
+						<map type = "MessageToMessage"> 
+							<copy>
+								<from Message = "cancelPORequest"  part ="cancel"/> 
+								<to message = "cancelQuoteRequest" part = "cancelMessage"/>
+							</copy>
+						</map>
+						<map type = "MessageToArtifact"> 
+							<copy>
+								<from message = "cancelQuoteResponse" part = "quoteId" />
+								<to artifact = "quote" attribute ="quoteId"/> 							
+							</copy>
+							<copy>
+								<from message = "cancelQuoteResponse" part = "cancelledDate"/>
+								<to artifact = "quote" attribute ="cancelledDate"/> 							
+							</copy>
+						</map>
+						
+					</mapping>
+					<transitions>
+						<transition artifact ="quote" fromState ="approving" toState ="rejected"/> <!-- can have more than one transition -->
+					</transitions>
+				</invoke>
+			</do>
+		</rule>
+		
+		</businessRules>
+</process><!-- //use wsdl as the source of data types used in variable declaration -->

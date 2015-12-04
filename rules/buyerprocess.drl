@@ -1,0 +1,138 @@
+package com.buyerprocess.test
+ 
+import com.acp.controllers.AcpProcessController;
+import com.acp.instance.ArtifactInstance;
+import com.acp.instance.AttributeInstance;
+import com.acp.instance.ProcessInstance;
+import com.acp.instance.RuleInstance;
+import com.acp.instance.ServiceInstance;
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList; 
+import com.acp.factory.AcpFactory;
+import org.apache.axiom.om.OMElement;
+import javax.xml.namespace.QName;
+import com.acp.events.MessageEvent;
+import com.acp.events.CombineEvent;
+import com.acp.events.ArtifactChangeEvent;
+
+global com.acp.controllers.AcpProcessController pc;
+
+ 
+rule "r01-createQuote"
+   
+    dialect "java"
+    when
+	
+
+	
+	$message: MessageEvent()
+	$supplierId: MessageEvent(getValueFromPart("supplierId") != null)
+	$productItem: MessageEvent(getValueFromPart("productItem")!= null)
+	$quantity: MessageEvent(getValueFromPart("quantity")!= null)
+//	$name: String(this != null) from $message.getValueFromPart("cust_name");
+//	$address: String(this != null) from $message.getValueFromPart("cust_address");
+		
+	
+    then
+	
+        
+	
+		ArrayList ListOfArtifact = new ArrayList<String>();
+		ListOfArtifact.add("quote");
+		
+		AcpFactory factory = new AcpFactory();		
+		RuleInstance ruleInstance = factory.getRuleInstance("buyer_process","r01-createQuote");
+		pc.startProcess(ListOfArtifact, "CreateQservice","createQuote", ruleInstance,"buyer_process", $message.getMessage());
+	
+	
+	
+	
+	
+		
+end
+
+rule "r02-approvingQuote"
+    
+  
+    dialect "java"
+    when
+	
+	
+	$artifact: ArtifactChangeEvent()
+	$state: ArtifactChangeEvent(getArtifactState("quote")== "created")
+	
+    then
+	
+        
+		
+		ArrayList ListOfArtifact = new ArrayList<String>();
+		
+		
+		AcpFactory factory = new AcpFactory();		
+		RuleInstance ruleInstance = factory.getRuleInstance("buyer_process","r02-approvingQuote");
+		pc.runProcess(ListOfArtifact,null ,"selftransitionService","transistState", ruleInstance,$artifact.getProcessId());
+		
+
+	
+		
+end
+
+rule "r03-confirmQuote"
+    
+  
+    dialect "java"
+    when
+	
+	
+	$message: CombineEvent()
+	$quoteId: CombineEvent(getValueFromPart("quoteId")!= null);
+	$confirm: CombineEvent(getValueFromPart("confirm")== "confirm")
+	$state: CombineEvent(getArtifactState("quote")== "approving")
+	
+    then
+	
+        
+		
+		ArrayList ListOfArtifact = new ArrayList<String>();
+		
+		
+		AcpFactory factory = new AcpFactory();		
+		RuleInstance ruleInstance = factory.getRuleInstance("buyer_process","r03-confirmQuote");
+		pc.runProcess(ListOfArtifact,$message.getMessage() ,"ConfirmQservice","confirmQuote", ruleInstance,$message.getProcessId());
+		
+
+	
+		
+end
+
+rule "r04-cancelQuote"
+    
+  
+    dialect "java"
+    when
+	
+	
+	$message: CombineEvent()
+	$quoteId: CombineEvent(getValueFromPart("quoteId")!= null)
+	$confirm: CombineEvent(getValueFromPart("cancel")== "cancel")
+	$state: CombineEvent(getArtifactState("quote")== "approving")
+	
+    then
+	
+        
+		
+		ArrayList ListOfArtifact = new ArrayList<String>();
+		
+		
+		AcpFactory factory = new AcpFactory();		
+		RuleInstance ruleInstance = factory.getRuleInstance("buyer_process","r04-cancelQuote");
+		pc.runProcess(ListOfArtifact,$message.getMessage() ,"CancelQservice","cancelQuote", ruleInstance,$message.getProcessId());
+		
+
+	
+		
+end  
+
+
+
+

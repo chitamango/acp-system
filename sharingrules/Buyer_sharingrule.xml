@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<client_sharing_rule xmlns="http://www.swin.edu.au" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" process_type = "buyer_process">
+      <rule no = "1">
+          <when>
+               <artifact_changed>
+                    <name>quote</name>
+                    <state>created</state>
+               </artifact_changed>
+          </when>
+          <share>
+               <artifact>
+                    <name>quote</name>
+                    <attributes>
+                         <attribute>quoteId</attribute>
+                         <attribute>supplierId</attribute>
+                         <attribute>submittedDate</attribute>
+                         <attribute>productItem</attribute>
+                         <attribute>quantity</attribute>
+                    </attributes>
+              
+               </artifact>
+          </share>
+     </rule>
+     <rule no = "2">
+          <when>
+               <artifact_changed>
+                    <name>quote</name>
+                    <state>accepted</state>
+               </artifact_changed>
+          </when>
+          <share>
+               <artifact>
+                    <name>quote</name>
+                    <attributes>
+                         <attribute>comfirmedDate</attribute>
+                    </attributes>
+              
+               </artifact>
+          </share>
+     </rule> 
+     <rule no = "3">
+          <when>
+               <artifact_changed>
+                    <name>quote</name>
+                    <state>rejected</state>
+               </artifact_changed>
+          </when>
+          <share>
+               <artifact>
+                    <name>quote</name>
+                    <attributes>
+                         <attribute>cancelledDate</attribute>
+                    </attributes>
+              
+               </artifact>
+          </share>
+     </rule>   
+    
+</client_sharing_rule>

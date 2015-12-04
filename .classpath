@@ -6,7 +6,7 @@
 			<attribute name="owner.project.facets" value="jst.utility"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.6">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
 		<attributes>
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
@@ -395,5 +395,6 @@
 	<classpathentry kind="lib" path="lib/drools-5.4.0-bin/xmlpull-1.1.3.1.jar"/>
 	<classpathentry kind="lib" path="lib/drools-5.4.0-bin/xpp3_min-1.1.4c.jar"/>
 	<classpathentry kind="lib" path="lib/drools-5.4.0-bin/xstream-1.4.1.jar"/>
+	<classpathentry kind="lib" path="C:/dev/Tomcat 6.0/lib/servlet-api.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

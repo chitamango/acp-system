@@ -1,0 +1,161 @@
+package com.buyerprocess.test
+ 
+import com.acp.controllers.AcpProcessController;
+import com.acp.instance.ArtifactInstance;
+import com.acp.instance.AttributeInstance;
+import com.acp.instance.ProcessInstance;
+import com.acp.instance.RuleInstance;
+import com.acp.instance.ServiceInstance;
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList; 
+import com.acp.factory.AcpFactory;
+import org.apache.axiom.om.OMElement;
+import javax.xml.namespace.QName;
+import com.acp.events.MessageEvent;
+import com.acp.events.CombineEvent;
+import com.acp.events.ArtifactChangeEvent;
+
+global com.acp.controllers.AcpProcessController pc;
+
+ 
+rule "r01-createPL"
+   
+    dialect "java"
+    when
+	
+
+	
+	$message: MessageEvent()
+	$orderId: MessageEvent(getValueFromPart("orderId") != null)
+	$productItem: MessageEvent(getValueFromPart("productItem")!= null)
+	$quantity: MessageEvent(getValueFromPart("quantity")!= null)
+//	$name: String(this != null) from $message.getValueFromPart("cust_name");
+//	$address: String(this != null) from $message.getValueFromPart("cust_address");
+		
+	
+    then
+	
+        
+	
+		ArrayList ListOfArtifact = new ArrayList<String>();
+		ListOfArtifact.add("pickingList");
+		
+		AcpFactory factory = new AcpFactory();		
+		RuleInstance ruleInstance = factory.getRuleInstance("supplier_process","r01-createPL");
+		pc.startProcess(ListOfArtifact, "createPLService","createPickingLIst", ruleInstance,"supplier_process", $message.getMessage());	
+		
+end
+
+rule "r02-cancelPL"
+    
+  
+    dialect "java"
+    when
+	
+	
+	$message: CombineEvent()
+	$orderId: CombineEvent(getValueFromPart("orderId")== getArtifactData("pickingList","orderId"))
+	$stock: CombineEvent(getArtifactData("pickingList","stockQuantity") < getArtifactData("pickingList","requestQuantity") )
+	$receivedDate: CombineEvent(getArtifactData("pickingList","receivedDate") != null)
+	$state: CombineEvent(getArtifactState("pickingList")== "checking")
+	
+    then
+	
+        
+		
+		ArrayList ListOfArtifact = new ArrayList<String>();
+		
+		
+		AcpFactory factory = new AcpFactory();		
+		RuleInstance ruleInstance = factory.getRuleInstance("supplier_process","r02-cancelPL");
+		pc.runProcess(ListOfArtifact,$message.getMessage() ,"CancelPLService","cancelPickingList", ruleInstance,$message.getProcessId());
+		
+
+	
+		
+end
+
+rule "r03-confirmPL"
+    
+  
+    dialect "java"
+    when
+	
+	
+	$message: CombineEvent()
+	$orderId: CombineEvent(getValueFromPart("orderId")== getArtifactData("pickingList","orderId"))
+	$stock: CombineEvent(getArtifactData("pickingList","stockQuantity") >= getArtifactData("pickingList","requestQuantity") )
+	$receivedDate: CombineEvent(getArtifactData("pickingList","receivedDate") != null)
+	$state: CombineEvent(getArtifactState("pickingList")== "checking")
+	
+    then
+	
+        
+		
+		ArrayList ListOfArtifact = new ArrayList<String>();
+		
+		
+		AcpFactory factory = new AcpFactory();		
+		RuleInstance ruleInstance = factory.getRuleInstance("supplier_process","r03-confirmPL");
+		pc.runProcess(ListOfArtifact,$message.getMessage() ,"ConfirmPLService","comfirmPickingList", ruleInstance,$message.getProcessId());
+		
+
+	
+		
+end
+rule "r04-preparePL"
+    
+  
+    dialect "java"
+    when
+	
+	
+	$artifact: ArtifactChangeEvent()
+	$confirmDate: ArtifactChangeEvent(getArtifactData("pickingList", "confirmedDate") != null)
+	$state: ArtifactChangeEvent(getArtifactState("pickingList")== "in_stock")
+	
+    then
+	
+        
+		
+		ArrayList ListOfArtifact = new ArrayList<String>();
+		
+		
+		AcpFactory factory = new AcpFactory();		
+		RuleInstance ruleInstance = factory.getRuleInstance("supplier_process","r04-preparePL");
+		pc.runProcess(ListOfArtifact,null ,"PreparePLService","preparePickingList", ruleInstance,$artifact.getProcessId());
+		
+
+	
+		
+end
+
+rule "r05-fillPL"
+    
+  
+    dialect "java"
+    when
+	
+	
+	$artifact: ArtifactChangeEvent()
+	$readytofilledDate: ArtifactChangeEvent(getArtifactData("pickingList", "readyTOfilledDate") != null)
+	$state: ArtifactChangeEvent(getArtifactState("pickingList")== "ready_to_filled")
+	
+    then
+	
+        
+		
+		ArrayList ListOfArtifact = new ArrayList<String>();
+		
+		
+		AcpFactory factory = new AcpFactory();		
+		RuleInstance ruleInstance = factory.getRuleInstance("supplier_process","r05-fillPL");
+		pc.runProcess(ListOfArtifact,null ,"FillPLService","fillPickingList", ruleInstance,$artifact.getProcessId());
+		
+
+	
+		
+end
+
+
+
