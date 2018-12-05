@@ -1,4 +1,7 @@
 package com.acp.instance;
+/*
+ *  @version 1.1
+ */
 
 public class StateInstance {
 	

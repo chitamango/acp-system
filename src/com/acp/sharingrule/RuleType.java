@@ -7,6 +7,9 @@
 
 
 package com.acp.sharingrule;
+/*
+ *  @version 1.1
+ */
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

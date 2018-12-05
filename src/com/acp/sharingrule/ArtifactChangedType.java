@@ -4,9 +4,15 @@
 // Any modifications to this file will be lost upon recompilation of the source schema. 
 // Generated on: 2012.08.28 at 04:09:42 PM EST 
 //
+/*
+ *  @version 1.1
+ */
 
 
 package com.acp.sharingrule;
+/*
+ *  @version 1.1
+ */
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

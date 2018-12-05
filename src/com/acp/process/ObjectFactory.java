@@ -7,6 +7,9 @@
 
 
 package com.acp.process;
+/*
+ *  @version 1.1
+ */
 
 import javax.xml.bind.annotation.XmlRegistry;
 import com.acp.process.AndType.Atom;

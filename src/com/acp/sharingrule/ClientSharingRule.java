@@ -7,6 +7,9 @@
 
 
 package com.acp.sharingrule;
+/*
+ *  @version 1.1
+ */
 
 import java.util.ArrayList;
 import java.util.List;
